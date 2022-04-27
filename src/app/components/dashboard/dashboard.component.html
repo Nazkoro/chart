@@ -1,0 +1,35 @@
+<form  [formGroup]="myForm" (ngSubmit)="submit()">
+  Начало <input id="start" type="date" formControlName="startDate"/>
+  <br />
+  <br />
+  Конец <input id="end" type="date" formControlName="endaDate"/>
+  <br />
+  <br />
+  <button id="go" >Погнали считать</button>
+  <br />
+  <br />
+  <div id="res"></div>
+</form>
+
+<select (change)="selectOption($event)" [(ngModel)]="selectedmonth">
+  <option *ngFor="let month of months; let i = index" [value]="i">
+    {{month }}
+  </option>
+</select>
+
+<select (change)="getWeeks($event)" [(ngModel)]="selectedWeek" *ngIf="selectedWeek">
+  <option *ngFor="let week of weeks; let i = index" [value]="i+1">
+    {{week}}
+  </option>
+</select>
+
+<ag-grid-angular
+  #agGrid
+  pagination
+  style="width: 100%; height: 500px;"
+  class="ag-theme-alpine"
+  [rowData]="rowData | async"
+  [columnDefs]="columnDefs"
+  rowSelection="multiple"
+>
+</ag-grid-angular>

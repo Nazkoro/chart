@@ -1,18 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import { AgChartOptions } from 'ag-charts-community';
+import {BaseService} from "../../service/base.service";
+import {Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-linechart',
   templateUrl: './linechart.component.html',
   styleUrls: ['./linechart.component.css']
 })
-export class LinechartComponent implements OnInit {
-   options: AgChartOptions;
+export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
+   options!: AgChartOptions;
+   subs: Subscription;
+   content: any;
 
-  constructor() {
+
+  constructor(private service: BaseService) {
+    this.subs = this.service.subject$.subscribe((data) => {
+      this.content = data
+      console.log("line component", data)
+      this.showChart()
+    })
+
+
+  }
+  showChart(){
+    console.log("print")
     this.options = {
       autoSize: true,
-      data: this.getData(),
+      data: this.content,
       theme: {
         overrides: {
           bar: {
@@ -32,8 +47,8 @@ export class LinechartComponent implements OnInit {
       series: [
         {
           type: 'bar',
-          xKey: 'type',
-          yKey: 'earnings',
+          xKey: 'username',
+          yKey: 'year',
         },
       ],
       axes: [
@@ -46,7 +61,7 @@ export class LinechartComponent implements OnInit {
           position: 'bottom',
           title: {
             enabled: true,
-            text: '£/week',
+            text: 'year of birth',
           },
         },
       ],
@@ -54,11 +69,20 @@ export class LinechartComponent implements OnInit {
         enabled: false,
       },
     };
+
   }
+
 
   ngOnInit() {}
 
-   getData() {
+  ngAfterViewInit(){
+    console.log("READY VIEW LINE COMPONENT")
+  }
+  ngOnDestroy(): void {
+    this.subs.unsubscribe()
+  }
+
+   getData(){
     return [
       { type: 'Managers, directors & senior officials', earnings: 954 },
       { type: 'Professional occupations', earnings: 844 },

@@ -7,7 +7,6 @@ import {
   FirstDataRenderedEvent,
   GridReadyEvent,
 } from 'ag-grid-community';
-
 import 'ag-grid-enterprise';
 
 @Component({

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AgChartOptions } from 'ag-charts-community';
+import {Subscription} from "rxjs";
+import {BaseService} from "../../service/base.service";
 
 @Component({
   selector: 'app-columncgart',
@@ -7,59 +9,59 @@ import { AgChartOptions } from 'ag-charts-community';
   styleUrls: ['./columncgart.component.css']
 })
 export class ColumncgartComponent implements OnInit {
- options: AgChartOptions;
+ options!: AgChartOptions;
+  subs: Subscription;
 
-  constructor() {
-    this.options = {
-      autoSize: true,
-      data: this.getData(),
-      title: {
-        text: 'Total Visitors to Museums and Galleries',
-        fontSize: 18,
-      },
-      subtitle: {
-        text: 'Source: Department for Digital, Culture, Media & Sport',
-      },
-      series: [
-        {
-          type: 'column',
-          xKey: 'year',
-          yKey: 'visitors',
-          fill: '#0084e7',
-          strokeWidth: 0,
-          shadow: {
-            enabled: true,
-            xOffset: 3,
-          },
+  constructor(private service: BaseService) {
+    this.subs = this.service.subjectPost$.subscribe((data) => {
+      console.log("column component", data)
+      this.options = {
+        autoSize: true,
+        data: data,
+        title: {
+          text: 'Total Visitors to Museums and Galleries',
+          fontSize: 18,
         },
-      ],
-      axes: [
-        {
-          type: 'category',
-          position: 'bottom',
-          title: {
-            enabled: true,
-            text: 'Year',
-          },
+        subtitle: {
+          text: 'Source: Department for Digital, Culture, Media & Sport',
         },
-        {
-          type: 'number',
-          position: 'left',
-          title: {
-            enabled: true,
-            text: 'Total visitors',
-          },
-          label: {
-            formatter: function (params) {
-              return params.value / 1000000 + 'M';
+        series: [
+          {
+            type: 'column',
+            xKey: 'desc',
+            yKey: 'likes',
+            fill: 'green',
+            strokeWidth: 0,
+            shadow: {
+              enabled: true,
+              xOffset: 3,
             },
           },
+        ],
+        axes: [
+          {
+            type: 'category',
+            position: 'bottom',
+            title: {
+              enabled: true,
+              text: 'description',
+            },
+          },
+          {
+            type: 'number',
+            position: 'left',
+            title: {
+              enabled: true,
+              text: 'Total likes',
+            },
+          },
+        ],
+        legend: {
+          enabled: false,
         },
-      ],
-      legend: {
-        enabled: false,
-      },
-    };
+      };
+
+    })
   }
 
   ngOnInit() {}
