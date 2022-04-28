@@ -17,14 +17,12 @@ export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
   constructor(private service: BaseService) {
     this.subs = this.service.subject$.subscribe((data) => {
       this.content = data
-      console.log("line component", data)
       this.showChart()
     })
 
 
   }
   showChart(){
-    console.log("print")
     this.options = {
       autoSize: true,
       data: this.content,
@@ -76,7 +74,6 @@ export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
   ngOnInit() {}
 
   ngAfterViewInit(){
-    console.log("READY VIEW LINE COMPONENT")
   }
   ngOnDestroy(): void {
     this.subs.unsubscribe()

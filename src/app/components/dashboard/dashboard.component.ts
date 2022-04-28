@@ -3,7 +3,7 @@ import { ColDef } from 'ag-grid-community';
 import {Observable, of, Subject} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {AgGridAngular} from "ag-grid-angular";
-import 'ag-grid-enterprise';
+// import 'ag-grid-enterprise';
 import {BaseService} from "../../service/base.service";
 import {FormControl, FormGroup} from "@angular/forms";
 
@@ -14,7 +14,8 @@ import {FormControl, FormGroup} from "@angular/forms";
 })
 export class DashboardComponent{
   @ViewChild('agGrid') agGrid!: AgGridAngular;
-  subject = new Subject();
+  // subject = new Subject();
+  // subject = new Subject();
   content: any;
   months = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
   selectedmonth: number = 1;
@@ -23,9 +24,10 @@ export class DashboardComponent{
   map = new Map();
 
   columnDefs: ColDef[] = [
-    { field: 'username',width: 300, sortable: true, filter: true, checkboxSelection: true },
-    { field: 'email', sortable: true, filter: true },
-    { field: 'year', sortable: true, filter: true },
+    { field: 'desc', sortable: true, filter: true },
+    { field: 'likes.length', sortable: true, filter: true },
+    { field: 'username',width: 300, sortable: true, filter: true },
+    { field: 'userId.year', sortable: true, filter: true },
     { field: 'createdAt', sortable: true, filter: true }
   ];
 
@@ -40,20 +42,24 @@ export class DashboardComponent{
     });
 
     this.service.getUsers().subscribe(items => {
-      this.content = items
-      this.rowData = of(items)
-      const changedUsers = items.map((user) => {
-        return {
-          username: user.username,
-          year: +user.year,
-          date: new Date(user.createdAt).toLocaleDateString()
-        }
-      })
-      this.service.getChangedusers(changedUsers)
+      console.log("items",items)
+      // this.content = items
+      // this.rowData = of(items)
+      // const changedUsers = items.map((user) => {
+      //   return {
+      //     username: user.username,
+      //     year: +user.year,
+      //     date: new Date(user.createdAt).toLocaleDateString()
+      //   }
+      // })
+      // this.service.getChangedusers(changedUsers)
       // this.subject.next(changedUsers);
     })
 
     this.service.getPosts().subscribe(posts => {
+      console.log("posts", posts)
+        this.content = posts
+        this.rowData = of(posts)
       const changedPosts = posts.map((post) => {
         return {
           desc: post.desc,
@@ -62,42 +68,54 @@ export class DashboardComponent{
         }
       })
       this.service.getChangedPost(changedPosts)
+
     })
   }
 
   submit(){
     let data = this.myForm.getRawValue()
-    console.log("input data",data)
-    let correctdata = new Date(data.startDate).toLocaleDateString()
-    console.log("correctdata",correctdata);
-    // let dayInMillseconds = Date.parse(correctdata);
-    let dayInMillseconds = new Date(correctdata).getTime();
-    console.log("dayInMillseconds",dayInMillseconds)
+    if(data.endaDate === null && typeof data.startDate === 'string'){
+      let filteredForDay = this.content.filter((user: any) => {
+        let dayFromtableInMilissecond = user.createdAt.slice(0, 10)
+        return data.startDate === dayFromtableInMilissecond;
+      })
+      this.content = filteredForDay
+      this.rowData = of(filteredForDay);
 
-    // console.log("Date.parse(correctdata)",Date.parse(correctdata))
+    } else if (data.startDate != null && data.endaDate != null) {
 
-    let filteredForDay = this.content.filter((user: any) => {
-      let dayFromtableInMilissecond = Date.parse((new Date(user.createdAt).toLocaleDateString()))
-      console.log(dayFromtableInMilissecond)
-      return dayInMillseconds === dayFromtableInMilissecond;
+      const startDatte = new Date(data.startDate).getTime()
+      const endDatte = new Date(data.endaDate).getTime()
+
+      let filteredForDay = this.content.filter((user: any) => {
+        let dayFromtableInMilissecond = new Date(user.createdAt.slice(0, 10)).getTime()
+        return startDatte <= dayFromtableInMilissecond && endDatte >= dayFromtableInMilissecond;
+      })
+      this.content = filteredForDay
+      this.rowData = of(filteredForDay);
+    }
+
+  }
+
+  createColumnDiogramm(){
+    //!nedd write some code !
+    const changedPosts = this.content.map((item: any) => {
+      return {
+        desc: item.desc,
+        likes: item.likes.length,
+        date: new Date(item.createdAt).toLocaleDateString()
+      }
     })
-    this.rowData = of(filteredForDay);
-    console.log(filteredForDay)
-    // console.log(Date.parse(data.startDate))
-    // console.log(Date.parse(this.content[0].createdAt))
+    this.service.getChangedPost(changedPosts)
+
   }
 
   getWeeks(event: Event) {
-    // const week = +(event.target as HTMLInputElement).value;
-    // console.log("this.selectedWeek", this.selectedWeek);
-
     let filteredForWeek = this.content.filter((user: any) => {
-      console.log("new Date(user.createdAt).getDate()",new Date(user.createdAt).getDate());
       let currentuser = new Date(user.createdAt).getDate()
-      console.log("this.map.get(this.selectedWeek)", this.map.get(+this.selectedWeek))
       return this.map.get(+this.selectedWeek).includes(currentuser)
     })
-    console.log("filteredForWeek",filteredForWeek)
+    this.content = filteredForWeek
     this.rowData = of(filteredForWeek);
     // this.weeks = []
   }
@@ -105,13 +123,11 @@ export class DashboardComponent{
   countWeekInMonth(){
     let tempMonth = this.selectedmonth;
     const lastDayInMonth =  new Date(2022,++tempMonth,0).getDate();
-    // let map = new Map();
     let arr: any = [];
     let countWeek = 1;
     for(let i = 1; i <= lastDayInMonth;i++){
 
       let datOfWeek = new Date(2022,this.selectedmonth,i).getDay()
-      // console.log("day of week", new Date(2022,this.selectedmonth,i).getDay(), " " , i)
       arr.push(i);
       if(datOfWeek == 0){
         this.map.set(countWeek, arr);
@@ -123,18 +139,21 @@ export class DashboardComponent{
     }
     this.weeks = [...this.map.keys()]
     console.log("map", this.map);
-
   }
 
   selectOption(event: Event) {
-
     const month = +(event.target as HTMLInputElement).value;
     let filteredFormonth = this.content.filter((user: any) => {
       const monthFromtable = new Date(user.createdAt).getMonth();
       return month == monthFromtable;
     })
-
+    this.content = filteredFormonth
     this.rowData = of(filteredFormonth);
     this.countWeekInMonth();
+  }
+
+  resetFliter(): void{
+    this.myForm.reset()
+    this.rowData = of(this.content)
   }
 }

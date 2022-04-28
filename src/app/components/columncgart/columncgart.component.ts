@@ -14,7 +14,6 @@ export class ColumncgartComponent implements OnInit {
 
   constructor(private service: BaseService) {
     this.subs = this.service.subjectPost$.subscribe((data) => {
-      console.log("column component", data)
       this.options = {
         autoSize: true,
         data: data,

@@ -5,23 +5,27 @@
   Конец <input id="end" type="date" formControlName="endaDate"/>
   <br />
   <br />
-  <button id="go" >Погнали считать</button>
+  <button id="go" >Фильтр по заданным датам</button>
   <br />
   <br />
   <div id="res"></div>
 </form>
-
+<span>Фильтр по месяцу </span>
 <select (change)="selectOption($event)" [(ngModel)]="selectedmonth">
   <option *ngFor="let month of months; let i = index" [value]="i">
     {{month }}
   </option>
 </select>
 
-<select (change)="getWeeks($event)" [(ngModel)]="selectedWeek" *ngIf="selectedWeek">
+<span> Фильтр по неделе месяца </span>
+<select (change)="getWeeks($event)" [(ngModel)]="selectedWeek" *ngIf="selectedWeek" style="margin-right: 10px">
   <option *ngFor="let week of weeks; let i = index" [value]="i+1">
     {{week}}
   </option>
 </select>
+
+<button (click)="resetFliter()">очистить фильтр</button>
+<button (click)="createColumnDiogramm()">Построить стобчатую диограму</button>
 
 <ag-grid-angular
   #agGrid
