@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import { AgChartOptions } from 'ag-charts-community';
 import {BaseService} from "../../service/base.service";
 import {Subscription } from 'rxjs';
@@ -8,14 +8,14 @@ import {Subscription } from 'rxjs';
   templateUrl: './linechart.component.html',
   styleUrls: ['./linechart.component.css']
 })
-export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
+export class LinechartComponent implements OnDestroy {
    options!: AgChartOptions;
    subs: Subscription;
    content: any;
 
 
   constructor(private service: BaseService) {
-    this.subs = this.service.subject$.subscribe((data) => {
+    this.subs = this.service.subjectPost$.subscribe((data) => {
       this.content = data
       this.showChart()
     })
@@ -36,17 +36,17 @@ export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
         },
       },
       title: {
-        text: 'Gross Weekly Earnings by Occupation (Q4 2019)',
+        text: 'statistic user age',
         fontSize: 18,
       },
       subtitle: {
-        text: 'Source: Office for National Statistics',
+        text: 'age',
       },
       series: [
         {
           type: 'bar',
           xKey: 'username',
-          yKey: 'year',
+          yKey: 'age',
         },
       ],
       axes: [
@@ -59,7 +59,7 @@ export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
           position: 'bottom',
           title: {
             enabled: true,
-            text: 'year of birth',
+            text: 'age',
           },
         },
       ],
@@ -67,30 +67,9 @@ export class LinechartComponent implements OnInit , OnDestroy , AfterViewInit{
         enabled: false,
       },
     };
-
   }
 
-
-  ngOnInit() {}
-
-  ngAfterViewInit(){
-  }
   ngOnDestroy(): void {
     this.subs.unsubscribe()
   }
-
-   getData(){
-    return [
-      { type: 'Managers, directors & senior officials', earnings: 954 },
-      { type: 'Professional occupations', earnings: 844 },
-      { type: 'Associate professional & technical', earnings: 699 },
-      { type: 'Skilled trades', earnings: 503 },
-      { type: 'Process, plant & machine operatives', earnings: 501 },
-      { type: 'Administrative & secretarial', earnings: 457 },
-      { type: 'Sales & customer services', earnings: 407 },
-      { type: 'Elementary occupations', earnings: 380 },
-      { type: 'Caring, leisure & other services', earnings: 358 },
-    ];
-  }
-
 }

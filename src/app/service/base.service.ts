@@ -7,19 +7,12 @@ import {Subject} from "rxjs";
 })
 export class BaseService {
   private url = "http://localhost:4000/api/admin";
-  public subject$ = new Subject<[]>()
   public subjectPost$ = new Subject<[]>()
 
   constructor(private http: HttpClient){ }
 
   getPosts(){
-    return this.http.get<any[]>(`${this.url}/posts`);
-  }
-  getUsers(){
-    return this.http.get<any[]>(`${this.url}/user-all`);
-  }
-  public getChangedusers(data: any){
-    this.subject$.next(data)
+    return this.http.get<any[]>(`${this.url}/chart-dashboard`);
   }
   public getChangedPost(data: any){
     this.subjectPost$.next(data)

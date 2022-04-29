@@ -8,8 +8,8 @@ import {BaseService} from "../../service/base.service";
   templateUrl: './columncgart.component.html',
   styleUrls: ['./columncgart.component.css']
 })
-export class ColumncgartComponent implements OnInit {
- options!: AgChartOptions;
+export class ColumncgartComponent  {
+  options!: AgChartOptions;
   subs: Subscription;
 
   constructor(private service: BaseService) {
@@ -18,16 +18,16 @@ export class ColumncgartComponent implements OnInit {
         autoSize: true,
         data: data,
         title: {
-          text: 'Total Visitors to Museums and Galleries',
+          text: 'Total likes',
           fontSize: 18,
         },
         subtitle: {
-          text: 'Source: Department for Digital, Culture, Media & Sport',
+          text: 'Likes',
         },
         series: [
           {
             type: 'column',
-            xKey: 'desc',
+            xKey: 'username',
             yKey: 'likes',
             fill: 'green',
             strokeWidth: 0,
@@ -43,7 +43,7 @@ export class ColumncgartComponent implements OnInit {
             position: 'bottom',
             title: {
               enabled: true,
-              text: 'description',
+              text: 'user',
             },
           },
           {
@@ -63,20 +63,4 @@ export class ColumncgartComponent implements OnInit {
     })
   }
 
-  ngOnInit() {}
-  getData() {
-    return [
-      { year: '2009', visitors: 40973087 },
-      { year: '2010', visitors: 42998338 },
-      { year: '2011', visitors: 44934839 },
-      { year: '2012', visitors: 46636720 },
-      { year: '2013', visitors: 48772922 },
-      { year: '2014', visitors: 50800193 },
-      { year: '2015', visitors: 48023342 },
-      { year: '2016', visitors: 47271912 },
-      { year: '2017', visitors: 47155093 },
-      { year: '2018', visitors: 49441678 },
-      { year: '2019', visitors: 50368190 },
-    ];
-  }
 }
